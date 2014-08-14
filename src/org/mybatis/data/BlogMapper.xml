@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mybatis.model.BlogMapper">
+
+	<!-- main -->
+	<select id="selectBlog_by_id" parameterType="int" resultType="Blog">
+		select * from Blog where id = #{id}
+	</select>
+	<select id="selectBlog_by_id_Map" parameterType="HashMap"
+		resultType="Blog">
+		select * from Blog where id = #{id}
+	</select>
+	<select id="selectBlog_by_bean" parameterType="Blog" resultType="Blog">
+		select * from Blog where id = #{id}
+	</select>
+
+	<!-- test2 -->
+	<resultMap id="blogResultMap" type="Blog">
+		<id property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="authorId" column="author_id" />
+	</resultMap>
+	<select id="selectBlog_use_as" parameterType="HashMap"
+		resultType="Blog">
+		select id , title, author_id as authorid from Blog where id
+		= #{id}
+	</select>
+	<select id="selectBlog_use_resultMap" parameterType="HashMap"
+		resultMap="blogResultMap">
+		select id , title, author_id from Blog where id = #{id}
+	</select>
+
+	<!-- test3 增删改 -->
+	<update id="updateBlog_use_bean" statementType="PREPARED"
+		parameterType="Blog">
+		update blog set title= #{title}, author_id=#{authorId}
+		where id = #{id}
+	</update>
+	<delete id="deleteBlog_use_bean" statementType="PREPARED"
+		parameterType="Blog">
+		delete from blog where id = #{id}
+	</delete>
+	<insert id="insertBlog_user_bean" statementType="PREPARED"
+		parameterType="Blog">
+		insert into blog(id, title, author_id) values(#{id},
+		#{title}, #{authorId})
+	</insert>
+
+	<!-- test4 自动生成主键 -->
+	<insert id="insertBlog_user_autokey" statementType="PREPARED"
+		parameterType="Blog">
+		<selectKey keyProperty="id" resultType="int" order="BEFORE">
+			select
+			max(id)+1 from blog
+		</selectKey>
+		insert into blog(id, title, author_id) values(#{id}, #{title},
+		#{authorId})
+	</insert>
+
+	<!-- test5 处理空值 -->
+	<insert id="insertBlog_user_autokey_null" statementType="PREPARED"
+		parameterType="Blog" flushCache="true">
+		<selectKey keyProperty="id" resultType="int" order="BEFORE">
+			select
+			max(id)+1 from blog
+		</selectKey>
+		insert into blog(id, title, author_id) values(#{id},
+		#{title,jdbcType=VARCHAR},
+		#{authorId})
+	</insert>
+
+	<!-- test7 使用构造器元素 -->
+	<resultMap id="blogResultMapConstructor" type="Blog">
+		<constructor>
+			<idArg column="id" javaType="int" />
+			<arg column="title" javaType="String" />
+			<arg column="author_id" javaType="int" />
+		</constructor>
+	</resultMap>
+	<select id="selectBlog_use_constructor" resultMap="blogResultMapConstructor">
+		select id ,
+		title, author_id from Blog where id = #{id}
+	</select>
+
+	<!-- test8 使用Association 元素 -->
+	<resultMap id="blogResult" type="Blog">
+		<id property="id" column="blog_id" />
+		<result property="title" column="blog_title" />
+		<association property="author" javaType="Author">
+			<id property="id" column="author_id" />
+			<result property="username" column="author_username" />
+			<result property="password" column="author_password" />
+			<result property="email" column="author_email" />
+			<result property="bio" column="author_bio" />
+		</association>
+	</resultMap>
+	<select id="selectBlog_use_association1" parameterType="int"
+		resultMap="blogResult">
+		select
+		B.id as blog_id,
+		B.title as blog_title,
+		A.id as
+		author_id,
+		A.username as author_username,
+		A.password as author_password,
+		A.email as author_email,
+		A.bio as author_bio
+		from Blog B left outer join
+		Author A on B.author_id = A.id
+		where B.id = #{id}
+	</select>
+
+	<!-- -->
+	<resultMap id="blogResult1" type="Blog">
+		<id property="id" column="blog_id" />
+		<result property="title" column="blog_title" />
+		<association property="author" column="blog_author_id"
+			javaType="Author" resultMap="authorResult" />
+	</resultMap>
+	<resultMap id="authorResult" type="Author">
+		<id property="id" column="author_id" />
+		<result property="username" column="author_username" />
+		<result property="password" column="author_password" />
+		<result property="email" column="author_email" />
+		<result property="bio" column="author_bio" />
+	</resultMap>
+	<select id="selectBlog_use_association2" parameterType="int"
+		resultMap="blogResult1">
+		select
+		B.id as blog_id,
+		B.title as blog_title,
+		A.id as
+		author_id,
+		A.username as author_username,
+		A.password as author_password,
+		A.email as author_email,
+		A.bio as author_bio
+		from Blog B left outer join
+		Author A on B.author_id = A.id
+		where B.id = #{id}
+	</select>
+
+	<!-- -->
+	<resultMap id="blogResult2" type="Blog">
+		<association property="author" column="author_id"
+			javaType="Author" select="selectAuthor" />
+	</resultMap>
+	<select id="selectAuthor" parameterType="int" resultType="Author">
+		SELECT
+		* FROM AUTHOR WHERE ID = #{id}
+	</select>
+	<select id="selectBlog_use_association3" parameterType="int"
+		resultMap="blogResult2">
+		SELECT * FROM BLOG WHERE ID = #{id}
+	</select>
+
+	<!-- 使用集合嵌套选择 -->
+	<resultMap id="blogResult3" type="Blog">
+		<id property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="authorId" column="authorid" />
+		<collection property="posts" javaType="ArrayList" column="id"
+			ofType="Post" select="selectPostsForBlog" />
+	</resultMap>
+	<select id="selectPostsForBlog" parameterType="int" resultType="Post">
+		SELECT * FROM POST WHERE BLOG_ID = #{id}
+	</select>
+	<select id="selectBlog_use_collection1" resultMap="blogResult3">
+<![CDATA[SELECT id , title, author_id as authorid FROM BLOG WHERE ID > 0 and ID
+< 4]]>
+	</select>
+
+	<!-- 使用集合的嵌套结果集 -->
+	<resultMap id="blogResult4" type="Blog">
+		<id property="id" column="blog_id" />
+		<result property="title" column="blog_title" />
+		<result property="authorId" column="authorid" />
+		<collection property="posts" ofType="Post">
+			<id property="id" column="post_id" />
+			<result property="subject" column="post_subject" />
+			<result property="section" column="post_section" />
+			<result property="body" column="post_body" />
+		</collection>
+	</resultMap>
+	<select id="selectBlog_use_collection2" resultMap="blogResult">
+<![CDATA[
+select
+B.id as blog_id,
+B.title as blog_title,
+B.author_id as authorid,
+P.id as post_id,
+P.subject as post_subject,
+P.section as post_section,
+P.body as post_body
+from Blog B
+left outer join Post P on B.id = P.blog_id
+where B.id > 0 and B.id < 4]]>
+	</select>
+</mapper>
