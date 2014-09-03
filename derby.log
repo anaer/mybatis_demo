@@ -1,6 +1,13 @@
 ----------------------------------------------------------------
-2014-08-14 01:15:23.026 GMTÔºö
-Ê≠£Âú®ÂºïÂØºÊï∞ÊçÆÂ∫ìÁõÆÂΩï C:\Program Files\Sun\JavaDB\bin\blogDB  ‰∏≠ÁöÑ
-Derby VThe Apache Software Foundation - Apache Derby - 10.5.3.0 - (802917) ÂÆû‰æã a816c00e-0147-d215-62ab-000000de9578
-
-数据库类装入器已启动 － derby.database.classpath=“”
+Tue Sep 02 17:35:21 CST 2014:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-0148-35b7-f6c0-0000009d2790 
+on database directory C:\Program Files\Sun\JavaDB\bin\blogDB with class loader sun.misc.Launcher$AppClassLoader@1d16e93 
+Loaded from file:/D:/.m2/repository/org/apache/derby/derby/10.10.2.0/derby-10.10.2.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_05-b13
+user.dir=E:\anaer\mybatis_demo
+os.name=Windows 7
+os.arch=x86
+os.version=6.1
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
